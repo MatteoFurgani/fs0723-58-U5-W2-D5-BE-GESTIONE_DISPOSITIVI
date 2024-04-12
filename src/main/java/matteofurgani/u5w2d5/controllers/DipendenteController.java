@@ -8,6 +8,7 @@ import matteofurgani.u5w2d5.services.DipendenteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -59,10 +60,12 @@ public class DipendenteController {
 
     // DELETE http://localhost:3001/dipendenti/{id}
 
-    @DeleteMapping("/{dipendentiId}")
+    @DeleteMapping("/{dipendenteId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void findAndDelete(@PathVariable int dipendentiId){
-        dipendenteService.findByIDAndDelete(dipendentiId);
+    public ResponseEntity<String> findByIdAndDelete(@PathVariable int dipendenteId) {
+
+        dipendenteService.findByIDAndDelete(dipendenteId);
+        return ResponseEntity.ok("Il dipendente è stato cancellato con successo");
     }
 
     // UPDATE IMAGGINE PROFILO
