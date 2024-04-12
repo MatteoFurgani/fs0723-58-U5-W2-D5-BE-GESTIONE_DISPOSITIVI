@@ -4,7 +4,8 @@ import jakarta.validation.constraints.NotEmpty;
 
 public record NewDispositivoDTO(
         @NotEmpty(message = "Il tipo di dispostivo è obbligatorio")
-        String tipoDispostivo,
+        String tipoDispositivo,
         @NotEmpty(message = "Lo stato è obbligatorio")
         String stato) {
+
 }

@@ -33,4 +33,5 @@ public class Dipendente {
         this.email = email;
         this.immagineProfilo = immagineProfilo;
     }
+
 }

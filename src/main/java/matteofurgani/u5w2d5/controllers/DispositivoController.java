@@ -1,20 +1,79 @@
 package matteofurgani.u5w2d5.controllers;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+
+import matteofurgani.u5w2d5.entities.Dispositivo;
+import matteofurgani.u5w2d5.exceptions.BadRequestException;
+import matteofurgani.u5w2d5.payloads.NewDipendenteRespDTO;
+import matteofurgani.u5w2d5.payloads.NewDispositivoDTO;
+import matteofurgani.u5w2d5.services.DispositivoService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping("dispositivi")
 public class DispositivoController {
 
+    @Autowired
+    private DispositivoService dispositivoService;
 
-    // 1. - POST http://localhost:3001/dispositivi (+ req.body)
+    // POST http://localhost:3001/dispositivi (+ req.body)
 
-    // 2. - GET http://localhost:3001/dispositivi
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public NewDipendenteRespDTO save(@RequestBody @Validated NewDispositivoDTO body, BindingResult validation) throws Exception{
+        if (validation.hasErrors()){
+            throw new BadRequestException(validation.getAllErrors());
+        }
+        Dispositivo dispositivo = dispositivoService.save(body);
+        return new NewDipendenteRespDTO(dispositivo.getId());
+    }
 
-    // 3. - GET http://localhost:3001/dispositivi/{id}
+    // GET http://localhost:3001/dispositivi
 
-    // 4. - PUT http://localhost:3001/dispositivi/{id} (+ req.body)
+    @GetMapping
+    public Page<Dispositivo> getDispositivi(@RequestParam(defaultValue = "0") int page,
+                                            @RequestParam(defaultValue = "10") int size,
+                                            @RequestParam(defaultValue = "id") String sort){
+        return dispositivoService.getDispositivo(page, size, sort);
+    }
 
-    // 5. - DELETE http://localhost:3001/dispositivi/{id}
+    // GET http://localhost:3001/dispositivi/{id}
+
+    @GetMapping("/{dispositivoId}")
+    public Dispositivo findById(@PathVariable int dispositivoId) {
+        return dispositivoService.findById(dispositivoId);
+    }
+
+    // PUT http://localhost:3001/dispositivi/{id}
+
+    @PutMapping("/{dispositivoId}")
+    public Dispositivo findByIdAndUpdate(@PathVariable int dispositivoId, @RequestBody Dispositivo body) {
+        return dispositivoService.findByIdAndUpdate(dispositivoId, body);
+    }
+
+    // DELETE http://localhost:3001/dispositivi/{id}
+
+    @DeleteMapping("/{dispositivoId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void findByIdAndDelete(@PathVariable int dispositivoId) {
+        dispositivoService.findByIdAndDelete(dispositivoId);
+    }
+
+
+    // GET http://localhost:3001/dispositivi/{id}/dipendenti
+
+
+    @PostMapping("/{dispositivoId}/{dipendentiId}")
+    public Dispositivo findByIdAndDipendenti(@PathVariable int dispositivoId, @PathVariable int dipendentiId) throws IOException {
+        Dispositivo dispositivo = dispositivoService.findById(dispositivoId);
+        return dispositivoService.findByIdAndAddDipendente(dispositivoId, dipendentiId);
+    }
+
+
 }

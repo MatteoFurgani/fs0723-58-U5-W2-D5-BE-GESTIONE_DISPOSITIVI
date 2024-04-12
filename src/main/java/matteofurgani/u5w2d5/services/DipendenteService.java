@@ -69,7 +69,7 @@ public class DipendenteService {
     public Dipendente uploadImage(int id, MultipartFile file) throws IOException{
         Dipendente found = this.findById(id);
         String imageURL = (String) cloudinaryUploader.uploader().upload(file.getBytes(), ObjectUtils.emptyMap()).get("url");
-        found.setUsername(imageURL);
+        found.setImmagineProfilo(imageURL);
         return dipendenteDAO.save(found);
     }
 
