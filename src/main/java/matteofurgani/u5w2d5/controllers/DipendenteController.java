@@ -11,6 +11,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/dipendenti")
@@ -19,7 +22,7 @@ public class DipendenteController {
     @Autowired
     private DipendenteService dipendenteService;
 
-    // 1. - POST http://localhost:3001/dipendenti (+ req.body)
+    // POST http://localhost:3001/dipendenti (+ req.body)
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -32,7 +35,7 @@ public class DipendenteController {
         return new NewDipendenteRespDTO(dipendente.getId());
     }
 
-    // 2. - GET http://localhost:3001/dipendenti
+    // GET http://localhost:3001/dipendenti
     @GetMapping
     public Page<Dipendente> getDipendenti(@RequestParam(defaultValue = "0") int page,
                                           @RequestParam(defaultValue = "10") int size,
@@ -40,25 +43,36 @@ public class DipendenteController {
         return dipendenteService.getDipendente(page, size, sort);
     }
 
-    // 3. - GET http://localhost:3001/dipendenti/{id}
+    // GET http://localhost:3001/dipendenti/{id}
 
     @GetMapping("/{dipendentiId}")
     public Dipendente findById(@PathVariable int dipendentiId) {
         return dipendenteService.findById(dipendentiId);
     }
 
-    // 4. - PUT http://localhost:3001/dipendenti/{id} (+ req.body)
+    // PUT http://localhost:3001/dipendenti/{id} (+ req.body)
 
     @PutMapping("/{dipendentiId}")
     public Dipendente findAndUpdate(@PathVariable int dipendentiId, @RequestBody Dipendente body){
         return dipendenteService.findByIdAndUpdate(dipendentiId, body);
     }
 
-    // 5. - DELETE http://localhost:3001/dipendenti/{id}
+    // DELETE http://localhost:3001/dipendenti/{id}
 
     @DeleteMapping("/{dipendentiId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void findAndDelete(@PathVariable int dipendentiId){
         dipendenteService.findByIDAndDelete(dipendentiId);
+    }
+
+    // UPDATE IMAGGINE PROFILO
+
+    @PostMapping("/{dipendentiId}/immagine-profilo")
+    public Dipendente updateimmagineProfilo(@RequestParam("avatar")MultipartFile file, @PathVariable int dipendentiId) {
+        try {
+            return dipendenteService.uploadImage(dipendentiId, file);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

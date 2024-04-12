@@ -1,5 +1,7 @@
 package matteofurgani.u5w2d5.services;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import matteofurgani.u5w2d5.entities.Dipendente;
 import matteofurgani.u5w2d5.exceptions.BadRequestException;
 import matteofurgani.u5w2d5.exceptions.NotFoundException;
@@ -11,6 +13,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
@@ -19,6 +22,9 @@ public class DipendenteService {
 
     @Autowired
     private DipendenteDAO dipendenteDAO;
+
+    @Autowired
+    private Cloudinary cloudinaryUploader;
 
     public Dipendente save(NewDipendenteDTO body) throws IOException{
         dipendenteDAO.findByEmail(body.email()).ifPresent(
@@ -58,6 +64,13 @@ public class DipendenteService {
     public void findByIDAndDelete(int id) {
         Dipendente found = this.findById(id);
         dipendenteDAO.delete(found);
+    }
+
+    public Dipendente uploadImage(int id, MultipartFile file) throws IOException{
+        Dipendente found = this.findById(id);
+        String imageURL = (String) cloudinaryUploader.uploader().upload(file.getBytes(), ObjectUtils.emptyMap()).get("url");
+        found.setUsername(imageURL);
+        return dipendenteDAO.save(found);
     }
 
 
